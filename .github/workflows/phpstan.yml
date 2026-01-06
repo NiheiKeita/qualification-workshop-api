@@ -1,0 +1,20 @@
+name: PHPStan
+on: [pull_request]
+
+jobs:
+  phpstan:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./src
+    steps:
+      - uses: actions/checkout@v2
+      - name: dokcer-compose up
+        run: |
+          docker-compose up -d
+
+      - name: Composer install
+        run: docker compose exec app composer install
+
+      - name: Run PHPStan
+        run: docker compose exec app composer stan
