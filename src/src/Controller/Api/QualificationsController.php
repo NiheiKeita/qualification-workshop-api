@@ -5,7 +5,6 @@ namespace App\Controller\Api;
 
 use App\Domain\Qualification\CreateQualificationRequest;
 use App\Form\QualificationCreateForm;
-use App\Infrastructure\Qualification\QualificationRepository;
 use App\UseCase\Qualification\CreateQualificationUseCase;
 use InvalidArgumentException;
 use RuntimeException;
@@ -19,7 +18,7 @@ final class QualificationsController extends AppController
         $this->viewBuilder()->setClassName('Json');
     }
 
-    public function create()
+    public function create(CreateQualificationUseCase $usecase)
     {
         $body = (array)$this->request->getData();
 
@@ -35,11 +34,6 @@ final class QualificationsController extends AppController
                 title: $body['title'] ?? null,
                 description: $body['description'] ?? null,
                 questionCount: isset($body['questionCount']) ? (int)$body['questionCount'] : null,
-            );
-
-            // 本当はDIコンテナに登録したいが、まず動く形
-            $usecase = new CreateQualificationUseCase(
-                repo: new QualificationRepository()
             );
 
             $res = $usecase->execute($req);

@@ -27,6 +27,9 @@ use Cake\Http\MiddlewareQueue;
 use Cake\ORM\Locator\TableLocator;
 use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
+use App\Domain\Qualification\QualificationRepositoryInterface;
+use App\Infrastructure\Qualification\QualificationRepository;
+use App\UseCase\Qualification\CreateQualificationUseCase;
 
 /**
  * Application setup class.
@@ -116,5 +119,10 @@ class Application extends BaseApplication
      */
     public function services(ContainerInterface $container): void
     {
+        $container
+            ->add(QualificationRepositoryInterface::class, QualificationRepository::class);
+        $container
+            ->add(CreateQualificationUseCase::class)
+            ->addArgument(QualificationRepositoryInterface::class);
     }
 }
