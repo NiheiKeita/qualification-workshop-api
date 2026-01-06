@@ -87,9 +87,22 @@ class Application extends BaseApplication
 
             // Cross Site Request Forgery (CSRF) Protection Middleware
             // https://book.cakephp.org/4/en/security/csrf.html#cross-site-request-forgery-csrf-middleware
-            ->add(new CsrfProtectionMiddleware([
-                'httponly' => true,
-            ]));
+            ->add((function () {
+                $csrf = new CsrfProtectionMiddleware([
+                    'httponly' => true,
+                ]);
+                $csrf->skipCheckCallback(function ($request) {
+                    $prefix = $request->getParam('prefix');
+                    if ($prefix === 'Api') {
+                        return true;
+                    }
+
+                    $path = $request->getUri()->getPath();
+                    return strncmp($path, '/api/', 5) === 0;
+                });
+
+                return $csrf;
+            })());
 
         return $middlewareQueue;
     }
